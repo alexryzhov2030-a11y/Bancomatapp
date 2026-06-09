@@ -55,7 +55,26 @@ class Dialogs:
         )
         amount_entry.pack(pady=(0, 20), padx=60, fill=tk.X)
         amount_entry.focus()
-
+        
+        def comfirm ():
+            try:
+                amount =int (amount_entry.get())
+                if amount <= 0:
+                    messagebox.showerror("Ошибка ввода данных", "Введите положительное число!")
+                    return
+                if amount % 100 != 0:
+                    messagebox.showerror("Ошибка ввода данных", "Введите сумму, кратную 100!")
+                    return
+                new_balance = current_balance + amount
+                self.storage.log_transaction("ПОПОЛНЕНИЕ СЧЕТА", amount, new_balance)
+                self.storage.save_balance(new_balance)
+                self.update_balance(new_balance)
+                messagebox.showinfo("Успех", f"Средства пополнены. Новый баланс равен: {new_balance:,.2f} руб.")
+                self.update_status(f"Средства пополнены. Новый баланс равен: {new_balance:,.2f} руб.")
+                dialog.destroy()
+            except ValueError:
+                messagebox.showerror("Ошибка ввода данных", "Введите Число!")
+        
         tk.Button(
             dialog,
             text="💵 ПОПОЛНИТЬ",
@@ -66,7 +85,8 @@ class Dialogs:
             bd=2,
             cursor="hand2",
             height=2,
-            width=20
+            width=20,
+            command=comfirm
         ).pack(pady=20)
 
     def withdraw_dialogs(self, current_balance):
@@ -113,6 +133,28 @@ class Dialogs:
         )
         amount_entry.pack(pady=(0, 20), padx=60, fill=tk.X)
         amount_entry.focus()
+        
+        def comfirm2 ():
+            try:
+                amount =int (amount_entry.get())
+                if amount <= 0:
+                    messagebox.showerror("Ошибка ввода данных", "Введите положительное число!")
+                    return
+                if amount % 100 != 0:
+                    messagebox.showerror("Ошибка ввода данных", "Введите сумму, кратную 100!")
+                    return
+                if amount > current_balance:
+                    messagebox.showerror("Ошибка ввода данных", "Недостаточно средств!")
+                    return
+                new_balance = current_balance - amount
+                self.storage.log_transaction("СНЯТИЕ СРЕДСТВ", amount, new_balance)
+                self.storage.save_balance(new_balance)
+                self.update_balance(new_balance)
+                messagebox.showinfo("Успех", f"Средства сняты. Новый баланс равен: {new_balance:,.2f} руб.")
+                self.update_status(f"Средства сняты. Новый баланс равен: {new_balance:,.2f} руб.")
+                dialog.destroy()
+            except ValueError:
+                messagebox.showerror("Ошибка ввода данных", "Введите Число!")
 
         tk.Button(
             dialog,
@@ -124,7 +166,8 @@ class Dialogs:
             bd=2,
             cursor="hand2",
             height=2,
-            width=20
+            width=20,
+            command=comfirm2
         ).pack(pady=20)
 
     def history_dialogs(self):
